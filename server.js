@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
+const path = require('path');
 
 // middleware
 app.use(express.json());
@@ -117,6 +119,12 @@ app.patch('/api/notes/:id', (request, response) => {
         response.status(404).json({ message: 'id does not exist' });
     }
 });
+
+app.get('/api/files', (request, response) => {
+    const items = fs.readdirSync(path.resolve('./direct'));
+
+    console.log(items);
+}); 
 
 
 const HOSTNAME = '127.0.0.1';
