@@ -19,6 +19,19 @@ let notes = [
     }
 ];
 
+/*
+    endpoints
+
+    URL                        Request Type               Functionality
+    /api/notes                 GET                        fetch all notes
+    /api/notes/:id             GET                        fetch a single note
+    /api/notes                 POST                       add a new note
+    /api/notes/:id             PUT                        replace a note
+    /api/notes/:id             DELETE                     delete a note
+    /api/notes/:id             PATCH                      update a note
+
+*/
+
 
 // endpoint to get the / route
 app.get('/', (request, response) => {
@@ -28,6 +41,20 @@ app.get('/', (request, response) => {
 // endpoint to get all the notes
 app.get('/api/notes', (request, response) => {
     response.json(notes);
+});
+
+// endpoint to fetch a single note
+app.get('/api/notes/:id', (request, response) => {
+    const id = request.params.id;
+
+    // find the notes with the id
+    const note = notes.find(note => note.id == id);
+
+    if (note) {
+        response.status(200).json(note);
+    } else {
+        response.status(404).json({ message: 'id does not exist'});
+    }
 });
 
 const HOSTNAME = '127.0.0.1';
