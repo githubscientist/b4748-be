@@ -66,6 +66,23 @@ app.post('/api/notes', (request, response) => {
     response.status(201).json({ message: 'note created successfully' });
 });
 
+// endpoint to delete a note identified by id
+app.delete('/api/notes', (request, response) => {
+    // get the id from the params
+    const id = request.params.id;
+
+    // find the note matching the id
+    const note = notes.find(note => note.id == id);
+
+    notes = notes.filter(note => note.id != id);
+
+    if (note) {
+        response.status(204).json(notes);
+    } else {
+        response.status(404).json({ message: 'id does not exist' });
+    }
+});
+
 const HOSTNAME = '127.0.0.1';
 const PORT = 3001;
 // make the server to listen for http requests
