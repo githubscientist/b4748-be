@@ -67,7 +67,7 @@ app.post('/api/notes', (request, response) => {
 });
 
 // endpoint to delete a note identified by id
-app.delete('/api/notes', (request, response) => {
+app.delete('/api/notes/:id', (request, response) => {
     // get the id from the params
     const id = request.params.id;
 
@@ -82,6 +82,8 @@ app.delete('/api/notes', (request, response) => {
         response.status(404).json({ message: 'id does not exist' });
     }
 });
+
+
 
 const HOSTNAME = '127.0.0.1';
 const PORT = 3001;
