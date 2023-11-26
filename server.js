@@ -19,8 +19,15 @@ let notes = [
     }
 ];
 
+
+// endpoint to get the / route
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>');
+    response.send('<h1>Notes Application</h1>');
+});
+
+// endpoint to get all the notes
+app.get('/api/notes', (request, response) => {
+    response.json(notes);
 });
 
 const HOSTNAME = '127.0.0.1';
