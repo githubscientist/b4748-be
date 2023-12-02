@@ -1,20 +1,20 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const config = require('./utils/config');
+const {info, error} = require('./utils/logger');
 
 // middleware
 app.use(express.json());
 
 // connect to the database
-const url = `mongodb+srv://sathishdatascientist:Guvi2023@cluster0.2r9mjwk.mongodb.net/B4748DB`;
-
-console.log('Connecting to DB...');
-mongoose.connect(url)
+info('Connecting to DB...');
+mongoose.connect(config.MONGODB_URI)
     .then(() => {
-        console.log('Connected to MongoDB...');
+        info('Connected to MongoDB...');
     })
-    .catch((error) => {
-        console.error('Error connecting to MongoDB...', error);
+    .catch((err) => {
+        error('Error connecting to MongoDB...', err);
     })
 
 // define a schema
@@ -35,9 +35,7 @@ app.get('/api/notes', (request, response) => {
         })
 });
 
-const HOSTNAME = '127.0.0.1';
-const PORT = 3001;
 // make the server to listen for http requests
-app.listen(PORT, () => {
-    console.log(`Server running at http://${HOSTNAME}:${PORT}`);
+app.listen(config.PORT, () => {
+    info(`Server running at http://${config.HOSTNAME}:${config.PORT}`);
 });
