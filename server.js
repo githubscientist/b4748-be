@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const config = require('./utils/config');
-const {info, error} = require('./utils/logger');
+const { info, error } = require('./utils/logger');
+const cors = require('cors');
 
 // middleware
+app.use(cors());
 app.use(express.json());
 
 // connect to the database
@@ -35,7 +37,4 @@ app.get('/api/notes', (request, response) => {
         })
 });
 
-// make the server to listen for http requests
-app.listen(config.PORT, () => {
-    info(`Server running at http://${config.HOSTNAME}:${config.PORT}`);
-});
+module.exports = app;
