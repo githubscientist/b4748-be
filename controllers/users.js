@@ -15,6 +15,14 @@ userRouter.post('/', async (request, response) => {
     // get the user details from the request body
     const { name, username, password } = request.body;
 
+    // check if the user already exists in the database
+    const userExists = await User.findOne({ username });
+
+    // if the user exists, send an error message
+    if (userExists) {
+        return response.status(409).json({ message: 'user already exists' });
+    }
+
     // hash the password and store it in the passwordHash field
     const passwordHash = await bcrypt.hash(password, 10);
 
