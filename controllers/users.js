@@ -1,5 +1,6 @@
 const userRouter = require('express').Router();
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // endpoint to get all the users
 userRouter.get('/', (request, response) => {
@@ -10,13 +11,25 @@ userRouter.get('/', (request, response) => {
 });
 
 // endpoint to create a new resource/user based on the request data
-userRouter.post('/', (request, response) => {
-    const user = new User(request.body);
+userRouter.post('/', async (request, response) => {
+    // get the user details from the request body
+    const { name, username, password } = request.body;
 
-    user.save()
-        .then(() => {
-            response.status(201).json({ message: 'user created successfully' });
-        });
+    // hash the password and store it in the passwordHash field
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // create a new user object
+    const user = new User({
+        name,
+        username,
+        passwordHash
+    });
+
+    // save the user object
+    const savedUser = await user.save();
+
+    // send the response back
+    response.json(savedUser);
 });
 
 // endpoint to fetch a single user/resource based on id
