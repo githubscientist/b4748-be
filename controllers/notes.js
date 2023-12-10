@@ -1,5 +1,8 @@
 const notesRouter = require('express').Router();
 const Note = require('../models/note');
+const jwt = require('jsonwebtoken');
+const config = require('../utils/config');
+const User = require('../models/user');
 
 // endpoint to get all the notes
 notesRouter.get('/', (request, response) => {
@@ -16,14 +19,51 @@ notesRouter.get('/query', (request, response) => {
     console.log(request.query.browser);
 });
 
-// endpoint to create a new resource/note based on the request data
-notesRouter.post('/', (request, response) => {
-    const note = new Note(request.body);
+const getTokenFrom = request => {
+    const authorization = request.get('authorization');
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+        return authorization.substring(7);
+    }
+    return null;
+};
 
-    note.save()
-        .then(() => {
-            response.status(201).json({ message: 'note created successfully' });
-        });
+// endpoint to create a new resource/note based on the request data
+notesRouter.post('/', async (request, response) => {
+    // get the new note from the request body
+    const noteObject = request.body;
+
+    // get the token from the Authorization header
+    const token = getTokenFrom(request);
+
+    // verify the token and get the user who created the note
+    const decodedToken = jwt.verify(token, config.JWT_SECRET);
+
+    // if the token is missing or invalid, return an error
+    if (!token || !decodedToken.id) {
+        return response.status(401).json({ message: 'token missing or invalid' });
+    }
+
+    // if the token is valid, get the user who created the note
+    const user = await User.findById(decodedToken.id);
+
+    // create a new note object
+    const note = new Note({
+        content: noteObject.content,
+        important: noteObject.important || false,
+        user: user._id
+    });
+
+    // save the note to the database
+    const savedNote = await note.save();
+
+    // add the note id to the user's notes array property
+    user.notes = user.notes.concat(savedNote._id);
+
+    // save the updated user object to the database
+    await user.save();
+
+    // return the saved note object
+    response.json({ message: 'note created successfully', note: savedNote });
 });
 
 // endpoint to fetch a single note/resource based on id
