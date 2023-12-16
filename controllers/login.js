@@ -3,6 +3,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../utils/config');
+const { request } = require('../server');
+const { verifyToken } = require('../middleware/auth');
 
 loginRouter.post('/', async (request, response) => {
     // get the credentials from the user through the request body
@@ -32,6 +34,14 @@ loginRouter.post('/', async (request, response) => {
     
     // send the token back to the user
     response.status(200).json({ token, username: user.username, name: user.name });
+});
+
+loginRouter.get('/check-token-expiration', verifyToken, (request, response) => {
+    try {
+        response.status(200).json({ message: 'token valid' });
+    } catch (error) {
+        response.status(401).json({ message: 'error checking token expiration' });
+    }
 });
 
 module.exports = loginRouter;

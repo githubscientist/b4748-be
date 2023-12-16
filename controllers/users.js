@@ -37,7 +37,7 @@ userRouter.post('/', async (request, response) => {
     const savedUser = await user.save();
 
     // send the response back
-    response.json(savedUser);
+    response.status(201).json(savedUser);
 });
 
 // endpoint to fetch a single user/resource based on id
@@ -47,7 +47,7 @@ userRouter.get('/:id', (request, response) => {
 
     User.findById(id)
         .then(user => {
-            response.status(200).json(user);
+            response.status(201).json(user);
         })
         .catch(err => {
             response.status(404).json({ message: 'id does not exist' });
